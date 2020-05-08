@@ -11,3 +11,9 @@ export function useSha3 (message: Ref<string>) {
   ])
   return value
 }
+
+export function usePrefix (message: Ref<string>) {
+  const length = computed(() => Buffer.from(message.value).length)
+  const messageWithPrefix = computed(() => `\x19Ethereum Signed Message:\n${length.value}${message.value}`)
+  return messageWithPrefix
+}
