@@ -1,4 +1,4 @@
-import { privateKeyVerify, publicKeyCreate, ecdsaSign, ecdsaRecover } from 'secp256k1'
+import { privateKeyVerify, publicKeyCreate, ecdsaSign, ecdsaRecover, ecdsaVerify } from 'secp256k1'
 import { randomBytes } from 'crypto'
 
 import createHash from 'keccak'
@@ -6,7 +6,7 @@ import createHash from 'keccak'
 import { Signature } from './signature'
 
 export class Address {
-  private readonly buffer: Buffer;
+  public readonly buffer: Buffer;
   constructor (buffer: Buffer) {
     this.buffer = buffer
   }
@@ -27,7 +27,7 @@ export class Account {
   }
 
   public get publicKey () {
-    return Buffer.from(publicKeyCreate(this.privateKey, false))
+    return Buffer.from(publicKeyCreate(this.privateKey, false)).slice(1)
   }
 
   public get address () {
@@ -35,17 +35,17 @@ export class Account {
   }
 
   public sign (digest: Buffer): Signature {
-    const { signature, recid } = ecdsaSign(digest, this.privateKey)
+    const { signature, recid } = ecdsaSign(Uint8Array.from(digest), Uint8Array.from(this.privateKey))
     return Signature.fromRSV(
       Buffer.from(signature).slice(0, 32),
       Buffer.from(signature).slice(32),
-      recid
+      recid + 27
     )
   }
 
-  public recover (digest: Buffer, signature: Signature): Buffer {
+  public static recover (digest: Buffer, signature: Signature): Buffer {
     const buf = Buffer.concat([signature.r, signature.s])
-    const publicKey = ecdsaRecover(Uint8Array.from(buf), signature.v, Uint8Array.from(digest), false).slice(1)
+    const publicKey = ecdsaRecover(Uint8Array.from(buf), (signature.v + 1) % 2, Uint8Array.from(digest), false).slice(1)
 
     return Buffer.from(publicKey)
   }

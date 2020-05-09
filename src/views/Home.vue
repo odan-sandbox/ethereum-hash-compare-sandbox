@@ -15,10 +15,12 @@ export default {
     const messageWithPrefix = usePrefix(message)
     const hashWithPrefix = useSha3(messageWithPrefix)
 
-    const { account, replacePrivateKey } = useAccount()
+    const { account, replacePrivateKey, sign, recover } = useAccount()
     const address = computed(() => account.address.value.toString())
+    const signature = computed(() => sign(hash.keccak256.value).value.toString('hex'))
+    const recoveredAddress = computed(() => recover(hash.keccak256.value, Buffer.from(signature.value, 'hex')).value.toString('hex'))
 
-    return { message, hash, hashWithPrefix, messageWithPrefix, address, replacePrivateKey }
+    return { message, hash, hashWithPrefix, messageWithPrefix, address, replacePrivateKey, signature, recoveredAddress }
   }
 }
 </script>
@@ -38,6 +40,9 @@ export default {
     <button @click="replacePrivateKey">
       click
     </button>
+    <div>signature: {{ signature }}</div>
+    <div>recoveredAddress: {{ recoveredAddress }}</div>
+
     <img
       alt="Vue logo"
       src="../assets/logo.png"

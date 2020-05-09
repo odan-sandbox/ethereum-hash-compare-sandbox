@@ -8,7 +8,7 @@ export const secp256k1N = new BN(
 export const secp256k1halfN = secp256k1N.div(new BN(2))
 
 export class Signature {
-  private readonly buffer: Buffer;
+  public readonly buffer: Buffer;
 
   public constructor (buffer: Buffer) {
     if (buffer.length !== 65) {
