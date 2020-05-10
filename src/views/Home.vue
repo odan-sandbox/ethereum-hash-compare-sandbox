@@ -1,14 +1,10 @@
 <script lang="ts">
 import { ref, computed } from 'vue'
-import HelloWorld from '@/components/HelloWorld.vue'
 import { useSha3, usePrefix } from '@/hooks/sha3'
 import { useAccount } from '@/hooks/account'
 
 export default {
   name: 'Home',
-  components: {
-    HelloWorld
-  },
   setup () {
     const message = ref('')
     const hash = useSha3(message)
@@ -47,6 +43,5 @@ export default {
       alt="Vue logo"
       src="../assets/logo.png"
     >
-    <HelloWorld msg="Welcome to Your Vue.js App" />
   </div>
 </template>
